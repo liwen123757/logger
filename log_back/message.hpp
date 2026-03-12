@@ -6,6 +6,8 @@
 #include <mingw.thread.h>
 #include "level.hpp"
 #include <memory>
+#include <ctime>
+#include "util.hpp"
 namespace lwlog{
     struct LogMeg{
         //ÐÐºÅ
@@ -22,8 +24,8 @@ namespace lwlog{
         Loglevel::level _level;
         //Ïß³ÌID
         std::thread::id _id;
-        LogMeg(std::string &name,std::string file,size_t line,Loglevel::level value,std::string &&payload):logger_name{name},_file(file),_level(value),
-        _line(line),_time(),_id(std::this_thread::get_id()),_message(std::move(payload)){}
+        LogMeg(const std::string &name,const std::string& file,size_t line,Loglevel::level value,std::string &&payload):logger_name{name},_file(file),_level(value),
+        _line(line),_time(Util::date::now()),_id(std::this_thread::get_id()),_message(std::move(payload)){}
 
     };
 }
