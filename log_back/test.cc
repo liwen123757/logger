@@ -15,7 +15,7 @@ int main()
 
 
 
-    const std::string file_path="D:\\test\\log_test";
+    const std::string file_path="./bitlog_step03_test.log";
     lwlog::Util::file::create_directory(lwlog::Util::file::path(file_path));
     lwlog::LogSink::ptr File_sink=std::make_shared<lwlog::FileSink>(file_path);
     
@@ -27,5 +27,6 @@ int main()
     assert(ifs.is_open());
     std::cout<<"test success"<<std::endl;
     std::cout<<"文件内容存在"<<std::endl;
+    混合
     return 0;
 }

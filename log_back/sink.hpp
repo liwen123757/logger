@@ -1,6 +1,6 @@
 #ifndef __M_SINK_H__
 #define __M_SINK_H__
-#include <mingw.mutex.h>
+#include <mutex>
 #include <memory>
 #include <string>
 #include <fstream>

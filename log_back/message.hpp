@@ -3,7 +3,7 @@
 
 
 #include <string>
-#include <mingw.thread.h>
+#include <thread>
 #include "level.hpp"
 #include <memory>
 #include <ctime>
