@@ -4,29 +4,31 @@
 #include "message.hpp"
 #include "sink.hpp"
 #include <fstream>
+#include <memory>
+#include "Formatter.hpp"
+#include "logger.hpp"
  
 int main()
 {
-    lwlog::LogMeg logmeg("root","log",52,lwlog::Loglevel::level::DEBUG,"This is a debug message");
-    lwlog::LogSink::ptr stdout_sink=std::make_shared<lwlog::StdoutSink>();
     
-    const std::string _msg="step03 stdout sink smoke test\n";
-    stdout_sink->log(_msg.c_str(),_msg.size());
+    // lwlog::LogMeg msg("root","main.cpp",7,lwlog::Loglevel::level::INFO,"hello");
+    /* lwlog::Formatter f1("[%p][%c][%f:%l]%m%n");
+    std::string out1=f1.format(msg);
+    assert(out1 == "[INFO][root][main.cpp:7]hello\n");
+    lwlog::LogSink::ptr stdsink=std::make_shared<lwlog::StdoutSink>();
+    stdsink->log(out1.c_str(),out1.size());
+    // std::cout<<out1<<std::endl;
 
-
-
-    const std::string file_path="./bitlog_step03_test.log";
-    lwlog::Util::file::create_directory(lwlog::Util::file::path(file_path));
-    lwlog::LogSink::ptr File_sink=std::make_shared<lwlog::FileSink>(file_path);
+    lwlog::Formatter f2("%d{%Y}-%m");
+    std::string str2=f2.format(msg);
+    std::cout<<str2<<std::endl;
+    lwlog::LogSink::ptr filesink(new lwlog::FileSink("log.txt"));
+    filesink->log(str2.c_str(),str2.size()); */
+    // assert(str2.size()>7);
+    lwlog::Formatter::ptr f1(new lwlog::Formatter("[%p][%c][%f:%l]%m%n"));
+    std::vector<lwlog::LogSink> sink(lwlog::StdoutSink);
+    lwlog::Logger::ptr Logger=std::make_shared<lwlog::SyncLogger>("synclogger",lwlog::Loglevel::level::DEBUG,f1,sink);
     
-    const std::string file_msg="step03 file sink test success";
-    File_sink->log(file_msg.c_str(),file_msg.size());
-
-    //读取文件内容进行校验
-    std::ifstream ifs(file_path,std::ios::binary);
-    assert(ifs.is_open());
-    std::cout<<"test success"<<std::endl;
-    std::cout<<"文件内容存在"<<std::endl;
-    混合
+    std::cout<<"测试通过"<<std::endl;
     return 0;
 }

@@ -24,7 +24,7 @@ namespace lwlog{
         Loglevel::level _level;
         //Ïß³ÌID
         std::thread::id _id;
-        LogMeg(const std::string &name,const std::string& file,size_t line,Loglevel::level value,std::string &&payload):logger_name{name},_file(file),_level(value),
+        LogMeg(Loglevel::level value,size_t line,const std::string& file,const std::string &logger_name,std::string &&payload):logger_name{logger_name},_file(file),_level(value),
         _line(line),_time(Util::date::now()),_id(std::this_thread::get_id()),_message(std::move(payload)){}
 
     };
