@@ -25,10 +25,11 @@ int main()
     lwlog::LogSink::ptr filesink(new lwlog::FileSink("log.txt"));
     filesink->log(str2.c_str(),str2.size()); */
     // assert(str2.size()>7);
-    lwlog::Formatter::ptr f1(new lwlog::Formatter("[%p][%c][%f:%l]%m%n"));
-    std::vector<lwlog::LogSink> sink(lwlog::StdoutSink);
-    lwlog::Logger::ptr Logger=std::make_shared<lwlog::SyncLogger>("synclogger",lwlog::Loglevel::level::DEBUG,f1,sink);
-    
+    lwlog::LogMeg msg(lwlog::Loglevel::level::INFO,7,"main.cpp","root","hello");
+    lwlog::Formatter f1("[%p][%c][%f:%l]%m%n");
+    std::string out1=f1.format(msg);
+    lwlog::LogSink::ptr ptr= lwlog::SinkFactory::CreateSink<lwlog::RollBySink>("app-roll",1024);
+    ptr->log(out1.c_str(),out1.size());
     std::cout<<"测试通过"<<std::endl;
     return 0;
 }

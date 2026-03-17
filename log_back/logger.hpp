@@ -154,7 +154,7 @@ namespace lwlog{
                 return;
             }
             for(auto &sink:_sinks)
-            {
+            {   
                 sink->log(data,len);
             }
         }
