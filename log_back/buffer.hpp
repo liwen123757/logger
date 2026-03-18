@@ -12,7 +12,7 @@ namespace lwlog{
     public:
         Buffer():_buffer(INIT_BUFFER_SIZE),_writer_idx(0),_reader_idx(0) {}
         //向缓冲区中写入数据
-        void Push(const char *data,size_t len)
+        void push(const char *data,size_t len)
         {   // 如果缓冲区容量不够则扩容
             ensureEnoughSize(len);
             //将数据拷贝进缓冲区
@@ -39,11 +39,18 @@ namespace lwlog{
             assert(len<readAbleSize());
             _reader_idx+=len;
         }
+
+        
         void swap(Buffer &buffer)
         {
             _buffer.swap(buffer._buffer);
             std::swap(_reader_idx,buffer._reader_idx);
             std::swap(_writer_idx,buffer._writer_idx);
+        }
+        void reset()
+        {
+            _writer_idx=0;
+            _reader_idx=0;
         }
         bool empty()
         {

@@ -8,6 +8,7 @@
 #include "sink.hpp"
 #include <cstdarg>
 #include "looper.hpp"
+#include <memory>
 
 namespace lwlog{
     class Logger{
@@ -165,7 +166,8 @@ namespace lwlog{
             AsyncLogger(const std::string name,
             Loglevel::level level,
             Formatter::ptr &formatter,
-            std::vector<LogSink::ptr> &sinks):Logger(name,level,formatter,sinks){}
+            std::vector<LogSink::ptr> &sinks,AsyncType &looper):Logger(name,level,formatter,sinks),
+                                                                _looper(std::make_shared<AsyncLooper>((std::bind(&AsyncLogger::realLog,this,std::placeholders::_1),_lopoper_type))) {}
             void log(const char *data,size_t len)
             {
                 
@@ -174,6 +176,7 @@ namespace lwlog{
             void realLog(){}
         private:
             AsyncLooper::ptr _looper;
+            AsyncType _lopoper_type;
       };
       enum class LoggerType{
             LOGGER_SYNC,
