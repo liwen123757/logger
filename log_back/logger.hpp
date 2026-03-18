@@ -10,7 +10,7 @@
 #include "looper.hpp"
 #include <memory>
 
-namespace lwlog{
+ namespace lwlog{
     class Logger{
     public:
         using ptr=std::shared_ptr<Logger>;
@@ -155,7 +155,7 @@ namespace lwlog{
                 return;
             }
             for(auto &sink:_sinks)
-            {   
+            {
                 sink->log(data,len);
             }
         }
@@ -166,18 +166,28 @@ namespace lwlog{
             AsyncLogger(const std::string name,
             Loglevel::level level,
             Formatter::ptr &formatter,
-            std::vector<LogSink::ptr> &sinks,AsyncType &looper):Logger(name,level,formatter,sinks),
-                                                                _looper(std::make_shared<AsyncLooper>((std::bind(&AsyncLogger::realLog,this,std::placeholders::_1),_lopoper_type))) {}
+            std::vector<LogSink::ptr> &sinks,AsyncType looper):Logger(name,level,formatter,sinks),
+                                                                _looper(std::make_shared<AsyncLooper>(std::bind(&AsyncLogger::realLog,this,std::placeholders::_1),_lopoper_type)) {}            
             void log(const char *data,size_t len)
-            {
-                
+            { 
+                _looper->push(data,len);          
             }
-            //设计一个实际落地函数
-            void realLog(){}
+            //设计一个实际落地函数,将缓冲区中的数据落地          
+            void realLog(Buffer &buffer){
+                if(_sinks.empty())
+                {
+                    return ;
+                }
+                for(auto &sink:_sinks)
+                {
+                    sink->log(buffer.begin(),buffer.readAbleSize());
+                }
+            } 
         private:
             AsyncLooper::ptr _looper;
-            AsyncType _lopoper_type;
-      };
+  
+            AsyncType _lopoper_type;    
+        };
       enum class LoggerType{
             LOGGER_SYNC,
             LOGGER_ASYNC
@@ -185,16 +195,40 @@ namespace lwlog{
 
       //使用建造者模式来建造日志器，不要让用户自己去构造日志器
       //1.抽象一个建造者类（完成日志器对象多余零部件的构造&日志器的构建）
-      //    1。设置日志器类型
+      //    1.设置日志器类型
       //    2.将不同类型的日志器的创建放到同一个日志器建造者类中完成
       class LoggerBuilder
       {
         public:
-            LoggerBuilder(){}
+            LoggerBuilder():_logger_type(LoggerType::LOGGER_SYNC),
+                            _limit_level(Loglevel::level::DEBUG),
+                            _looper_type(AsyncType::ASYNC_SAFE) {}
+            void buildLoggerType(LoggerType type){_logger_type=type;}
+            void buildLoggerName(std::string name){_logger_name=name;}
+            void buildEnableUnSafeAsync(){_looper_type=AsyncType::ASYNC_SAFE;}
+            void buildFormatter(const std::string pattern){_formatter=std::make_shared<Formatter>(pattern);}
+            template<typename SinkType,typename... Args>
+            void buildSink()
+            {
+                LogSink::ptr sink=SinkFactory::CreateSink<SinkType>(std::forward<Args>(args)...);
+                _sink.push_back(sinks);
+            }
+            virtual Logger::ptr build()=0;
+
         private:
+            AsyncType _looper_type;
             LoggerType _logger_type;
             std::string _logger_name;
+            Loglevel::level _limit_level;
+            Formatter::ptr _formatter;
+            std::vector<LogSink::ptr> _sinks;
       };
+
+      //派生出具体的建造者类--局部日志起的建造者&全局的日志起建造者（后面添加了全局单例管理器之后，将日志器添加全局管理）
+      class LocalBuilder:public LoggerBuilder
+      {
+
+      }
       
 
       

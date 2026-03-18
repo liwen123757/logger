@@ -7,6 +7,7 @@
 #include <functional>
 #include <thread>
 #include <atomic>
+
 namespace lwlog{
     using Functor=std::function<void(Buffer &)>;
     enum class AsyncType{
@@ -21,7 +22,7 @@ namespace lwlog{
         _callback(cb), 
         _looper_type(looper_type),
         _stop(false)  {}
-
+        ~AsyncLooper(){stop();}
         void stop()
         {
             _stop=true;//将退出标志设为true

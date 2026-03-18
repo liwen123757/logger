@@ -25,11 +25,22 @@ int main()
     lwlog::LogSink::ptr filesink(new lwlog::FileSink("log.txt"));
     filesink->log(str2.c_str(),str2.size()); */
     // assert(str2.size()>7);
-    lwlog::LogMeg msg(lwlog::Loglevel::level::INFO,7,"main.cpp","root","hello");
+    /* lwlog::LogMeg msg(lwlog::Loglevel::level::INFO,7,"main.cpp","root","hello");
     lwlog::Formatter f1("[%p][%c][%f:%l]%m%n");
     std::string out1=f1.format(msg);
     lwlog::LogSink::ptr ptr= lwlog::SinkFactory::CreateSink<lwlog::RollBySink>("app-roll",1024);
-    ptr->log(out1.c_str(),out1.size());
+    ptr->log(out1.c_str(),out1.size()); */
+    // 创建格式化器
+    lwlog::Formatter::ptr formatter = std::make_shared<lwlog::Formatter>("[%d{%H:%M:%S}][%t][%p][%c][%f:%l] %m%n");
+
+    // 创建 sinks
+    std::vector<lwlog::LogSink::ptr> sinks;
+    sinks.push_back(lwlog::SinkFactory::CreateSink<lwlog::RollBySink>("app-roll",1024));
+
+    // 创建同步日志器
+    // lwlog::Logger::ptr logger = std::make_shared<lwlog::SyncLogger>("sync_logger", lwlog::Loglevel::level::DEBUG, formatter, sinks);
+    lwlog::Logger::ptr logger=std::make_shared<lwlog::AsyncLogger>("sync_logger", lwlog::Loglevel::level::DEBUG, formatter, sinks,lwlog::AsyncType::ASYNC_SAFE);
+    logger->debug(__FILE__, __LINE__, "This is a debug message: %s", "debug");
     std::cout<<"测试通过"<<std::endl;
     return 0;
 }
