@@ -2,7 +2,7 @@
 #define __M_BUFFER_H__
 #include <vector>
 #include <iostream>
-#include <assert.h>
+#include <cassert>
 
 #define INIT_BUFFER_SIZE (1*1024*1024)
 #define THRESHOLD_BUFFER_SIZE (8*1024*1024)
